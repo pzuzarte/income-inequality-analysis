@@ -992,9 +992,36 @@ body{{background:var(--bg);color:var(--text);font-family:var(--font);
 ::-webkit-scrollbar{{width:6px;height:6px}}
 ::-webkit-scrollbar-track{{background:transparent}}
 ::-webkit-scrollbar-thumb{{background:var(--border);border-radius:3px}}
+
+/* ── Mobile / collapsible nav ── */
+#nav-toggle{{display:none;position:fixed;top:14px;left:14px;z-index:1001;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:8px;
+  padding:8px 13px;color:var(--text);font-size:18px;line-height:1;
+  cursor:pointer;transition:background .15s}}
+#nav-toggle:hover{{background:var(--border)}}
+#sidebar-overlay{{display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.55);z-index:999;backdrop-filter:blur(2px)}}
+#sidebar-overlay.open{{display:block}}
+
+@media(max-width:768px){{
+  body{{display:block}}
+  #nav-toggle{{display:block}}
+  #sidebar{{position:fixed;top:0;left:-240px;height:100vh;z-index:1000;
+    width:220px;transition:left .25s ease;box-shadow:none}}
+  #sidebar.open{{left:0;box-shadow:4px 0 24px rgba(0,0,0,.6)}}
+  #main{{height:auto;overflow-y:unset}}
+  .hero{{padding:64px 20px 32px}}
+  .stat-cards{{flex-direction:column}}
+  .content{{padding:0 16px 60px}}
+  .section-title{{font-size:18px}}
+  .chart-card{{padding:4px}}
+  .report-footer{{padding:20px;flex-direction:column;gap:4px}}
+}}
 </style>
 </head>
 <body>
+<button id="nav-toggle" aria-label="Toggle navigation">&#9776;</button>
+<div id="sidebar-overlay"></div>
 
 <!-- SIDEBAR -->
 <nav id="sidebar">
@@ -1189,7 +1216,7 @@ body{{background:var(--bg);color:var(--text);font-family:var(--font);
 </div><!-- /main -->
 
 <script>
-// Sidebar active-link scrollspy
+// ── Scrollspy ──────────────────────────────────────────────
 const sections = document.querySelectorAll('section[id]');
 const navLinks  = document.querySelectorAll('#sidebar .nav-link');
 const observer  = new IntersectionObserver(entries => {{
@@ -1203,6 +1230,30 @@ const observer  = new IntersectionObserver(entries => {{
   }});
 }}, {{ rootMargin: '-15% 0px -65% 0px' }});
 sections.forEach(s => observer.observe(s));
+
+// ── Collapsible sidebar ────────────────────────────────────
+const toggle  = document.getElementById('nav-toggle');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+
+function openNav() {{
+  sidebar.classList.add('open');
+  overlay.classList.add('open');
+  toggle.innerHTML = '&#x2715;';
+}}
+function closeNav() {{
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+  toggle.innerHTML = '&#9776;';
+}}
+
+toggle.addEventListener('click', () =>
+  sidebar.classList.contains('open') ? closeNav() : openNav()
+);
+overlay.addEventListener('click', closeNav);
+navLinks.forEach(l => l.addEventListener('click', () => {{
+  if (window.innerWidth <= 768) closeNav();
+}}));
 </script>
 </body>
 </html>"""
