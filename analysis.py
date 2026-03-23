@@ -372,7 +372,7 @@ def chart_quintiles(df):
     if sub.empty:
         return "<p style='color:#8B949E;padding:24px'>No quintile data available from World Bank API.</p>"
 
-    sub = sub.sort_values("income_bot20", ascending=False)
+    sub = sub.sort_values("income_bot20", ascending=True)   # lowest bottom-quintile share → bottom of chart; most equal → top
     ys = [SHORT[c] for c in sub.index]
 
     fig = go.Figure()
